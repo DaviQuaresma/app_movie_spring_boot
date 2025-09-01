@@ -1,0 +1,42 @@
+<div
+  class="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500"
+>
+  <div class="bg-white rounded-xl shadow-lg p-8 w-full max-w-md">
+    <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Entrar</h2>
+    <form (submit)="login(); $event.preventDefault()">
+      <div class="mb-4">
+        <label class="block text-gray-700 font-semibold mb-2" for="email">Email</label>
+        <input
+          class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+          type="email"
+          id="email"
+          placeholder="Seu email"
+          [value]="email()"
+          (input)="setEmail($event.target.value)"
+        />
+      </div>
+      <div class="mb-6">
+        <label class="block text-gray-700 font-semibold mb-2" for="password">Senha</label>
+        <input
+          class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+          type="password"
+          id="password"
+          placeholder="Sua senha"
+          [value]="password()"
+          (input)="setPassword($event.target.value)"
+        />
+      </div>
+      <button
+        class="w-full bg-blue-600 text-white font-bold py-2 rounded-lg hover:bg-blue-700 transition"
+        type="submit"
+      >
+        Entrar
+      </button>
+    </form>
+    <div class="mt-6 text-center">
+      <button class="text-blue-600 hover:underline font-semibold" (click)="irParaCadastro()">
+        Criar conta
+      </button>
+    </div>
+  </div>
+</div>
