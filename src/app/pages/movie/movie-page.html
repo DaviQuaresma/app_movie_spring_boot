@@ -1,0 +1,300 @@
+<!-- Dashboard de Filmes - Balanceado -->
+<div class="min-h-screen bg-slate-50">
+  <style>
+    .line-clamp-2 {
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+    }
+    .line-clamp-3 {
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
+    }
+    
+    /* Card 3D Flip Effect */
+    .flip-card {
+      background-color: transparent;
+      perspective: 1000px;
+    }
+    
+    .flip-card-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+      cursor: pointer;
+    }
+    
+    .flip-card.flipped .flip-card-inner {
+      transform: rotateY(180deg);
+    }
+    
+    .flip-card-front, .flip-card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    
+    .flip-card-back {
+      transform: rotateY(180deg);
+    }
+  </style>
+  <!-- Header -->
+  <div class="bg-white border-b border-slate-200 shadow-sm">
+    <div class="container mx-auto px-6 py-6">
+      <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+        <h1 class="text-3xl font-bold text-slate-800">🎬 Meus Filmes</h1>
+
+        <!-- Barra de pesquisa -->
+        <div class="flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-4">
+          <div class="relative">
+            <input
+              type="text"
+              placeholder="Pesquisar filmes..."
+              class="pl-10 pr-4 py-2 border border-slate-300 rounded-lg bg-white text-slate-900 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              [value]="searchTitle()"
+              (input)="setSearchTitle($event.target.value)"
+            />
+            <svg
+              class="w-4 h-4 absolute left-3 top-3 text-slate-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="m21 21-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              ></path>
+            </svg>
+          </div>
+
+          <button
+            (click)="openAddModal()"
+            class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-5 rounded-lg transition duration-200 shadow-sm"
+          >
+            ➕ Adicionar Filme
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Conteúdo Principal -->
+  <div class="container mx-auto px-6 py-8">
+    <!-- Loading Spinner -->
+    <div *ngIf="loading()" class="flex justify-center items-center py-20">
+      <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
+    </div>
+
+    <!-- Lista de Filmes -->
+    <div
+      *ngIf="!loading()"
+      class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6"
+    >
+      <div
+        *ngFor="let movie of filteredMovies; let i = index"
+        class="flip-card h-96"
+        [class.flipped]="isFlipped(i)"
+        (click)="toggleFlip(i)"
+      >
+        <div class="flip-card-inner shadow-lg hover:shadow-xl transition-shadow duration-300">
+          
+          <!-- FRENTE - Poster e Info Básica -->
+          <div class="flip-card-front bg-white border border-slate-200">
+            <div class="relative h-full">
+              <!-- Poster Background -->
+              <div class="absolute inset-0">
+                <img 
+                  *ngIf="movie.poster && movie.poster !== 'N/A'; else placeholderPoster"
+                  [src]="movie.poster" 
+                  [alt]="movie.title"
+                  class="w-full h-full object-cover"
+                />
+                <ng-template #placeholderPoster>
+                  <div class="h-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center">
+                    <svg class="w-16 h-16 text-white opacity-50" fill="currentColor" viewBox="0 0 20 20">
+                      <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm3 2h6v4H7V5zm8 8v2h1v-2h-1zm-2-2H7v4h6v-4zm2 0h1V9h-1v2zm1-4V5h-1v2h1zM5 5v6H4V5h1zm0 8H4v2h1v-2z" clip-rule="evenodd"></path>
+                    </svg>
+                  </div>
+                </ng-template>
+              </div>
+              
+              <!-- Overlay com gradient -->
+              <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+              
+              <!-- Rating Badge -->
+              <div *ngIf="movie.imdb_rating && movie.imdb_rating !== 'N/A'" 
+                   class="absolute top-3 right-3 bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded-full flex items-center">
+                ⭐ {{ movie.imdb_rating }}
+              </div>
+              
+              <!-- Informações na parte inferior -->
+              <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
+                <h3 class="text-lg font-bold mb-1 line-clamp-2">{{ movie.title }}</h3>
+                <div class="flex items-center justify-between">
+                  <span class="text-sm opacity-90">{{ movie.year }}</span>
+                  <span *ngIf="movie.runtime && movie.runtime !== 'N/A'" 
+                        class="text-xs opacity-75">{{ movie.runtime }}</span>
+                </div>
+                <p *ngIf="movie.genre && movie.genre !== 'N/A'" 
+                   class="text-xs opacity-75 mt-1 line-clamp-1">{{ movie.genre }}</p>
+                
+                <!-- Indicador de clique -->
+                <div class="mt-2 text-center">
+                  <span class="text-xs opacity-60">Clique para detalhes</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- VERSO - Detalhes Completos -->
+          <div class="flip-card-back bg-white border border-slate-200">
+            <div class="h-full flex flex-col p-4">
+              <!-- Título e Ano -->
+              <div class="mb-3">
+                <h3 class="text-lg font-bold text-slate-800 mb-1 line-clamp-2">{{ movie.title }}</h3>
+                <div class="flex items-center justify-between">
+                  <span class="text-slate-600 font-medium">{{ movie.year }}</span>
+                  <span *ngIf="movie.imdb_rating && movie.imdb_rating !== 'N/A'" 
+                        class="text-yellow-600 text-sm font-semibold">⭐ {{ movie.imdb_rating }}</span>
+                </div>
+              </div>
+
+              <!-- Plot -->
+              <div class="flex-1 overflow-y-auto mb-3">
+                <p *ngIf="movie.plot && movie.plot !== 'N/A'" 
+                   class="text-xs text-slate-600 mb-3 line-clamp-4">
+                  {{ movie.plot }}
+                </p>
+
+                <!-- Detalhes em Grid Compacto -->
+                <div class="space-y-2 text-xs">
+                  <div *ngIf="movie.director && movie.director !== 'N/A'" class="flex">
+                    <span class="text-slate-500 font-medium w-12 shrink-0">Dir:</span>
+                    <span class="text-slate-700 line-clamp-1">{{ movie.director }}</span>
+                  </div>
+                  
+                  <div *ngIf="movie.actors && movie.actors !== 'N/A'" class="flex">
+                    <span class="text-slate-500 font-medium w-12 shrink-0">Cast:</span>
+                    <span class="text-slate-700 line-clamp-2">{{ movie.actors }}</span>
+                  </div>
+                  
+                  <div *ngIf="movie.box_office && movie.box_office !== 'N/A'" class="flex">
+                    <span class="text-slate-500 font-medium w-12 shrink-0">Box:</span>
+                    <span class="text-slate-700">{{ movie.box_office }}</span>
+                  </div>
+                  
+                  <div *ngIf="movie.awards && movie.awards !== 'N/A'" class="flex">
+                    <span class="text-slate-500 font-medium w-12 shrink-0">Awards:</span>
+                    <span class="text-slate-700 line-clamp-2">{{ movie.awards }}</span>
+                  </div>
+                  
+                  <div *ngIf="movie.runtime && movie.runtime !== 'N/A'" class="flex">
+                    <span class="text-slate-500 font-medium w-12 shrink-0">Time:</span>
+                    <span class="text-slate-700">{{ movie.runtime }}</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Botões na parte inferior -->
+              <div class="space-y-2">
+                <button
+                  (click)="deleteMovie(movie.id.toString(), movie.title); $event.stopPropagation()"
+                  class="w-full bg-red-50 hover:bg-red-100 text-red-600 font-medium py-2 px-3 rounded-lg transition duration-200 border border-red-200 text-sm"
+                >
+                  🗑️ Excluir
+                </button>
+                
+                <!-- Indicador de clique para voltar -->
+                <div class="text-center">
+                  <span class="text-xs text-slate-400">Clique para voltar</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Mensagem quando não há filmes -->
+    <div *ngIf="!loading() && filteredMovies.length === 0" class="text-center py-20">
+      <div class="text-6xl mb-4">🎬</div>
+      <h3 class="text-2xl font-semibold text-slate-800 mb-2">
+        {{ searchTitle() ? 'Nenhum filme encontrado' : 'Nenhum filme cadastrado' }}
+      </h3>
+      <p class="text-slate-600 mb-6">
+        {{
+          searchTitle()
+            ? 'Tente uma pesquisa diferente'
+            : 'Adicione seu primeiro filme para começar!'
+        }}
+      </p>
+      <button
+        *ngIf="!searchTitle()"
+        (click)="openAddModal()"
+        class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 shadow-sm"
+      >
+        ➕ Adicionar Primeiro Filme
+      </button>
+    </div>
+  </div>
+
+  <!-- Modal de Adicionar Filme -->
+  <div
+    *ngIf="showAddModal()"
+    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+  >
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-md">
+      <!-- Header do Modal -->
+      <div class="bg-indigo-600 rounded-t-xl px-6 py-4">
+        <h2 class="text-xl font-semibold text-white">🎬 Adicionar Novo Filme</h2>
+      </div>
+
+      <!-- Conteúdo do Modal -->
+      <div class="p-6">
+        <div class="mb-6">
+          <label class="block text-sm font-medium text-slate-700 mb-2">Título do Filme</label>
+          <input
+            type="text"
+            placeholder="Digite o título do filme..."
+            class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition duration-200"
+            [value]="newMovieTitle()"
+            (input)="setNewMovieTitle($event.target.value)"
+            (keyup.enter)="addMovie()"
+          />
+        </div>
+
+        <!-- Botões do Modal -->
+        <div class="flex space-x-3">
+          <button
+            (click)="closeAddModal()"
+            class="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium py-3 px-4 rounded-lg transition duration-200"
+          >
+            Cancelar
+          </button>
+          <button
+            (click)="addMovie()"
+            [disabled]="!newMovieTitle().trim() || loading()"
+            class="flex-1 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 text-white font-medium py-3 px-4 rounded-lg transition duration-200"
+          >
+            {{ loading() ? 'Adicionando...' : 'Adicionar' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

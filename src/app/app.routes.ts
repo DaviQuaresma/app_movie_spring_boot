@@ -1,3 +1,4 @@
+import { MoviePage } from './pages/movie/movie-page';
 import { Routes } from '@angular/router';
 import { AuthGuard } from '../middleware/middleware-guard';
 
@@ -11,12 +12,12 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./components/register/register-page').then((m) => m.RegisterPage),
   },
-  // {
-  //   path: 'movies',
-  //   loadComponent: () =>
-  //     import('./components/movies/movies.component').then((m) => m.MoviesComponent),
-  //   canActivate: [AuthGuard],
-  // },
+  {
+    path: 'movies',
+    loadComponent: () =>
+      import('./pages/movie/movie-page').then((m) => m.MoviePage),
+    canActivate: [AuthGuard],
+  },
   {
     path: '**',
     redirectTo: 'login',

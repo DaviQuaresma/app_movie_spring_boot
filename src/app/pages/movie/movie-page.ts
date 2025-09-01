@@ -4,18 +4,28 @@ import { FormsModule } from '@angular/forms';
 import { moviesService } from '../../../services/api';
 
 interface Movie {
-  id: string;
+  id: number;
   title: string;
-  year?: number;
-  genre?: string;
-  director?: string;
-  poster?: string;
-  createdAt?: string;
+  year: string;
+  genre: string;
+  director: string;
+  actors: string;
+  plot: string;
+  poster: string;
+  runtime: string;
+  imdb_rating: string;
+  box_office: string;
+  awards: string;
+  country: string;
+  language: string;
+  type: string;
+  created_at: string;
+  updated_at: string;
 }
 
 @Component({
   selector: 'movie-page',
-  templateUrl: './movie.html',
+  templateUrl: './movie-page.html',
   imports: [CommonModule, FormsModule],
 })
 export class MoviePage implements OnInit {
@@ -24,9 +34,24 @@ export class MoviePage implements OnInit {
   newMovieTitle = signal<string>('');
   searchTitle = signal<string>('');
   showAddModal = signal<boolean>(false);
+  flippedCards = signal<Set<number>>(new Set()); // Controla quais cards estão virados
 
   async ngOnInit() {
     await this.loadMovies();
+  }
+
+  isFlipped(index: number): boolean {
+    return this.flippedCards().has(index);
+  }
+
+  toggleFlip(index: number): void {
+    const flipped = new Set(this.flippedCards());
+    if (flipped.has(index)) {
+      flipped.delete(index);
+    } else {
+      flipped.add(index);
+    }
+    this.flippedCards.set(flipped);
   }
 
   async loadMovies() {
@@ -101,9 +126,7 @@ export class MoviePage implements OnInit {
   get filteredMovies() {
     const search = this.searchTitle().toLowerCase();
     if (!search) return this.movies();
-    
-    return this.movies().filter(movie => 
-      movie.title.toLowerCase().includes(search)
-    );
+
+    return this.movies().filter((movie) => movie.title.toLowerCase().includes(search));
   }
 }

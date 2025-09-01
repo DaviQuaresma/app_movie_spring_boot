@@ -40,10 +40,11 @@ export const authService = {
   },
 
   async me() {
-    const response = await api.get('/auth/me', {
+    const response = await api.get('/users/me', {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
     });
-    if (response.data.status) {
+
+    if (response.status) {
       return response.data;
     }
     throw new Error(response.data.message || 'Failed to fetch user info');
@@ -52,22 +53,31 @@ export const authService = {
 
 export const moviesService = {
   async getMovies() {
-    const response = await api.post('movie');
+    const response = await api.get('movie', {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+    });
     return response.data;
   },
 
   async getMovieById(id: string) {
-    const response = await api.get(`movie/id`, { params: { id } });
+    const response = await api.get(`movie/${id}`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+    });
     return response.data;
   },
 
   async getNewMovie(title: string) {
-    const response = await api.get('movie/search', { params: { title } });
+    const response = await api.get('movie/search', {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      params: { title },
+    });
     return response.data;
   },
 
   async deleteMovie(id: string) {
-    const response = await api.delete(`movie/id`, { data: { id } });
+    const response = await api.delete(`/movie/${id}`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+    });
     return response.data;
   },
 };
