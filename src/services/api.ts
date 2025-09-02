@@ -52,6 +52,18 @@ export const authService = {
 };
 
 export const moviesService = {
+  async getAllMovies() {
+    const response = await api.get('movie/allMovies', {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+    });
+
+    if (response.status === 403) {
+      throw new Error('Acesso negado');
+    }
+
+    return response.data;
+  },
+
   async getMovies(totalPages: number, page: number) {
     const response = await api.get('movie', {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },

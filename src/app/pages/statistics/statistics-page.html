@@ -1,0 +1,257 @@
+<div class="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+  <!-- Header da Página -->
+  <div class="bg-white shadow-sm border-b border-slate-200">
+    <div class="container mx-auto px-6 py-8">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-3xl font-bold text-slate-800 flex items-center gap-3">
+            <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center">
+              <mat-icon class="text-white text-xl">analytics</mat-icon>
+            </div>
+            Estatísticas da Coleção
+          </h1>
+          <p class="text-slate-600 mt-2">Análise detalhada dos seus filmes</p>
+        </div>
+        
+        <!-- Loading indicator -->
+        <div *ngIf="loading()" class="flex items-center gap-2 text-blue-600">
+          <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
+          <span class="text-sm font-medium">Carregando...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Conteúdo Principal -->
+  <div class="container mx-auto px-6 py-8">
+    
+    <!-- Cards de Resumo -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <!-- Total de Filmes -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow duration-200">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-slate-600 text-sm font-medium">Total de Filmes</p>
+            <p class="text-3xl font-bold text-slate-800 mt-1">{{ totalMovies() }}</p>
+          </div>
+          <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+            <mat-icon class="text-blue-600 text-xl">movie</mat-icon>
+          </div>
+        </div>
+      </div>
+
+      <!-- Avaliação Média -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow duration-200">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-slate-600 text-sm font-medium">Avaliação Média</p>
+            <p class="text-3xl font-bold text-green-600 mt-1">{{ ratingStats().average }}</p>
+            <p class="text-xs text-slate-500">{{ ratingStats().total }} filmes avaliados</p>
+          </div>
+          <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+            <mat-icon class="text-green-600 text-xl">star</mat-icon>
+          </div>
+        </div>
+      </div>
+
+      <!-- Duração Média -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow duration-200">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-slate-600 text-sm font-medium">Duração Média</p>
+            <p class="text-3xl font-bold text-purple-600 mt-1">{{ runtimeStats().average }}min</p>
+            <p class="text-xs text-slate-500">{{ runtimeStats().total }} filmes</p>
+          </div>
+          <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+            <mat-icon class="text-purple-600 text-xl">schedule</mat-icon>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filmes Premiados -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 hover:shadow-md transition-shadow duration-200">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-slate-600 text-sm font-medium">Filmes Premiados</p>
+            <p class="text-3xl font-bold text-yellow-600 mt-1">{{ awardsStats().percentage }}%</p>
+            <p class="text-xs text-slate-500">{{ awardsStats().total }} filmes</p>
+          </div>
+          <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+            <mat-icon class="text-yellow-600 text-xl">emoji_events</mat-icon>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seção de Gráficos -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+      
+      <!-- Gêneros Mais Populares -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+        <h3 class="text-xl font-semibold text-slate-800 mb-6 flex items-center gap-2">
+          <mat-icon class="text-blue-600">category</mat-icon>
+          Gêneros Mais Populares
+        </h3>
+        
+        <div class="space-y-4">
+          <div *ngFor="let genre of genreStats()" class="relative">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm font-medium text-slate-700">{{ genre.genre }}</span>
+              <span class="text-sm text-slate-600">{{ genre.count }} ({{ genre.percentage }}%)</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-2.5">
+              <div 
+                class="h-2.5 rounded-full transition-all duration-700 ease-out"
+                [style.width.%]="genre.percentage"
+                [style.background-color]="genre.color">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Distribuição por Décadas -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+        <h3 class="text-xl font-semibold text-slate-800 mb-6 flex items-center gap-2">
+          <mat-icon class="text-purple-600">timeline</mat-icon>
+          Filmes por Década
+        </h3>
+        
+        <div class="space-y-4">
+          <div *ngFor="let decade of decadeStats()" class="relative">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm font-medium text-slate-700">{{ decade.decade }}</span>
+              <span class="text-sm text-slate-600">{{ decade.count }} filmes</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-2.5">
+              <div 
+                class="bg-gradient-to-r from-purple-500 to-blue-500 h-2.5 rounded-full transition-all duration-700 ease-out"
+                [style.width.%]="decade.percentage">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seção de Detalhes -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      
+      <!-- Top Diretores -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+        <h3 class="text-xl font-semibold text-slate-800 mb-6 flex items-center gap-2">
+          <mat-icon class="text-green-600">person</mat-icon>
+          Top Diretores
+        </h3>
+        
+        <div class="space-y-4">
+          <div *ngFor="let director of directorStats(); let i = index" 
+               class="flex items-start gap-3 p-3 rounded-lg hover:bg-slate-50 transition-colors duration-200">
+            <div class="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+              {{ i + 1 }}
+            </div>
+            <div class="flex-1">
+              <p class="font-medium text-slate-800">{{ director.director }}</p>
+              <p class="text-sm text-slate-600">{{ director.count }} filme{{ director.count > 1 ? 's' : '' }}</p>
+              <div class="mt-1">
+                <p *ngFor="let movie of director.movies" class="text-xs text-slate-500 truncate">
+                  • {{ movie }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Distribuição de Avaliações -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+        <h3 class="text-xl font-semibold text-slate-800 mb-6 flex items-center gap-2">
+          <mat-icon class="text-yellow-600">star_rate</mat-icon>
+          Distribuição de Avaliações
+        </h3>
+        
+        <div class="space-y-4">
+          <div *ngFor="let range of ratingStats().distribution" class="relative">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-sm font-medium text-slate-700">{{ range.label }}</span>
+              <span class="text-sm text-slate-600">{{ range.count }}</span>
+            </div>
+            <div class="w-full bg-slate-200 rounded-full h-2.5">
+              <div 
+                class="h-2.5 rounded-full transition-all duration-700 ease-out"
+                [style.width.%]="(range.count / ratingStats().total) * 100"
+                [style.background-color]="range.color">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Estatísticas de Rating -->
+        <div class="mt-6 pt-4 border-t border-slate-200">
+          <div class="grid grid-cols-3 gap-4 text-center">
+            <div>
+              <p class="text-lg font-semibold text-green-600">{{ ratingStats().highest }}</p>
+              <p class="text-xs text-slate-500">Maior</p>
+            </div>
+            <div>
+              <p class="text-lg font-semibold text-blue-600">{{ ratingStats().average }}</p>
+              <p class="text-xs text-slate-500">Média</p>
+            </div>
+            <div>
+              <p class="text-lg font-semibold text-red-600">{{ ratingStats().lowest }}</p>
+              <p class="text-xs text-slate-500">Menor</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Top Países -->
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6">
+        <h3 class="text-xl font-semibold text-slate-800 mb-6 flex items-center gap-2">
+          <mat-icon class="text-red-600">public</mat-icon>
+          Países de Origem
+        </h3>
+        
+        <div class="space-y-4">
+          <div *ngFor="let country of countryStats(); let i = index" 
+               class="flex items-center justify-between p-3 rounded-lg hover:bg-slate-50 transition-colors duration-200">
+            <div class="flex items-center gap-3">
+              <div class="w-6 h-6 bg-gradient-to-br from-red-500 to-pink-500 rounded-full flex items-center justify-center text-white text-xs font-semibold">
+                {{ i + 1 }}
+              </div>
+              <span class="font-medium text-slate-800">{{ country.country }}</span>
+            </div>
+            <div class="text-right">
+              <p class="text-sm font-semibold text-slate-700">{{ country.count }}</p>
+              <p class="text-xs text-slate-500">{{ country.percentage }}%</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Seção de Destaques -->
+    <div class="mt-8 bg-white rounded-xl shadow-sm border border-slate-200 p-6" *ngIf="awardsStats().topAwardedMovies.length > 0">
+      <h3 class="text-xl font-semibold text-slate-800 mb-6 flex items-center gap-2">
+        <mat-icon class="text-yellow-600">emoji_events</mat-icon>
+        Filmes Mais Premiados
+      </h3>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div *ngFor="let movie of awardsStats().topAwardedMovies" 
+             class="p-4 border border-slate-200 rounded-lg hover:shadow-md transition-shadow duration-200">
+          <h4 class="font-semibold text-slate-800 mb-2">{{ movie.title }}</h4>
+          <p class="text-sm text-slate-600 mb-2">{{ movie.year }}</p>
+          <p class="text-xs text-slate-500 leading-relaxed">{{ movie.awards }}</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Estado vazio -->
+    <div *ngIf="!loading() && totalMovies() === 0" class="text-center py-20">
+      <mat-icon class="text-6xl text-slate-400 mb-4">analytics</mat-icon>
+      <h3 class="text-2xl font-semibold text-slate-800 mb-2">Nenhum dado disponível</h3>
+      <p class="text-slate-600">Adicione alguns filmes para ver as estatísticas.</p>
+    </div>
+  </div>
+</div>

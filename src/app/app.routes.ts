@@ -19,6 +19,12 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
   },
   {
+    path: 'statistics',
+    loadComponent: () =>
+      import('./pages/statistics/statistics-page').then((m) => m.StatisticsPage),
+    canActivate: [AuthGuard],
+  },
+  {
     path: '**',
     redirectTo: 'login',
   },
