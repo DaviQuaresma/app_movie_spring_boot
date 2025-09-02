@@ -5,8 +5,8 @@ import { Router } from "@angular/router";
 
 
 @Component({
-    selector: 'register-page',
-    templateUrl: './register-page.html',
+    selector: 'register-component',
+    templateUrl: './register-component.html',
     imports: [FormsModule]
 })
 

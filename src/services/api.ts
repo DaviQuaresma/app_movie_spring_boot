@@ -56,6 +56,11 @@ export const moviesService = {
     const response = await api.get('movie', {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
     });
+
+    if (response.status === 403) {
+      throw new Error('Acesso negado');
+    }
+
     return response.data;
   },
 
@@ -63,6 +68,11 @@ export const moviesService = {
     const response = await api.get(`movie/${id}`, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
     });
+
+    if (response.status === 403) {
+      throw new Error('Acesso negado');
+    }
+
     return response.data;
   },
 
@@ -71,6 +81,11 @@ export const moviesService = {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
       params: { title },
     });
+
+    if (response.status === 403) {
+      throw new Error('Acesso negado');
+    }
+
     return response.data;
   },
 
@@ -78,6 +93,11 @@ export const moviesService = {
     const response = await api.delete(`/movie/${id}`, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
     });
+
+    if (response.status === 403) {
+      throw new Error('Acesso negado');
+    }
+
     return response.data;
   },
 };

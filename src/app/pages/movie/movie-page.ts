@@ -1,6 +1,7 @@
 import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { MatIconModule } from '@angular/material/icon';
 import { moviesService } from '../../../services/api';
 
 interface Movie {
@@ -13,20 +14,20 @@ interface Movie {
   plot: string;
   poster: string;
   runtime: string;
-  imdb_rating: string;
-  box_office: string;
+  imdbRating: string;
+  boxOffice: string;
   awards: string;
   country: string;
   language: string;
   type: string;
-  created_at: string;
-  updated_at: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 @Component({
   selector: 'movie-page',
   templateUrl: './movie-page.html',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, MatIconModule],
 })
 export class MoviePage implements OnInit {
   movies = signal<Movie[]>([]);

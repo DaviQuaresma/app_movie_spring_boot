@@ -50,50 +50,32 @@
       transform: rotateY(180deg);
     }
   </style>
-  <!-- Header -->
-  <div class="bg-white border-b border-slate-200 shadow-sm">
-    <div class="container mx-auto px-6 py-6">
-      <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-        <h1 class="text-3xl font-bold text-slate-800">🎬 Meus Filmes</h1>
-
-        <!-- Barra de pesquisa -->
-        <div class="flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-4">
-          <div class="relative">
-            <input
-              type="text"
-              placeholder="Pesquisar filmes..."
-              class="pl-10 pr-4 py-2 border border-slate-300 rounded-lg bg-white text-slate-900 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-              [value]="searchTitle()"
-              (input)="setSearchTitle($event.target.value)"
-            />
-            <svg
-              class="w-4 h-4 absolute left-3 top-3 text-slate-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="m21 21-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              ></path>
-            </svg>
-          </div>
-
-          <button
-            (click)="openAddModal()"
-            class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-5 rounded-lg transition duration-200 shadow-sm"
-          >
-            ➕ Adicionar Filme
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
+  
   <!-- Conteúdo Principal -->
   <div class="container mx-auto px-6 py-8">
+    
+    <!-- Barra de Controles -->
+    <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0 mb-8">
+      <!-- Barra de pesquisa -->
+      <div class="relative w-full md:w-auto">
+        <input
+          type="text"
+          placeholder="Pesquisar filmes..."
+          class="pl-10 pr-4 py-3 border border-slate-300 rounded-lg bg-white text-slate-900 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 w-full md:w-80"
+          [value]="searchTitle()"
+          (input)="setSearchTitle($event.target.value)"
+        />
+        <mat-icon class="absolute left-3 top-3.5 text-slate-400 text-base">search</mat-icon>
+      </div>
+
+      <button
+        (click)="openAddModal()"
+        class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 shadow-sm flex items-center gap-2"
+      >
+        <mat-icon class="text-lg">add</mat-icon>
+        Adicionar Filme
+      </button>
+    </div>
     <!-- Loading Spinner -->
     <div *ngIf="loading()" class="flex justify-center items-center py-20">
       <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-indigo-600"></div>
@@ -125,9 +107,7 @@
                 />
                 <ng-template #placeholderPoster>
                   <div class="h-full bg-gradient-to-br from-indigo-400 to-purple-500 flex items-center justify-center">
-                    <svg class="w-16 h-16 text-white opacity-50" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm3 2h6v4H7V5zm8 8v2h1v-2h-1zm-2-2H7v4h6v-4zm2 0h1V9h-1v2zm1-4V5h-1v2h1zM5 5v6H4V5h1zm0 8H4v2h1v-2z" clip-rule="evenodd"></path>
-                    </svg>
+                    <mat-icon class="text-white opacity-50 text-6xl">movie</mat-icon>
                   </div>
                 </ng-template>
               </div>
@@ -136,9 +116,10 @@
               <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
               
               <!-- Rating Badge -->
-              <div *ngIf="movie.imdb_rating && movie.imdb_rating !== 'N/A'" 
-                   class="absolute top-3 right-3 bg-yellow-500 text-white text-xs font-bold px-2 py-1 rounded-full flex items-center">
-                ⭐ {{ movie.imdb_rating }}
+              <div *ngIf="movie.imdbRating && movie.imdbRating !== 'N/A'" 
+                   class="absolute top-2 right-2 bg-black/70 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-md flex items-center gap-1">
+                <mat-icon class="text-xs text-yellow-400">star</mat-icon>
+                <span class="font-medium">{{ movie.imdbRating }}</span>
               </div>
               
               <!-- Informações na parte inferior -->
@@ -168,8 +149,11 @@
                 <h3 class="text-lg font-bold text-slate-800 mb-1 line-clamp-2">{{ movie.title }}</h3>
                 <div class="flex items-center justify-between">
                   <span class="text-slate-600 font-medium">{{ movie.year }}</span>
-                  <span *ngIf="movie.imdb_rating && movie.imdb_rating !== 'N/A'" 
-                        class="text-yellow-600 text-sm font-semibold">⭐ {{ movie.imdb_rating }}</span>
+                  <span *ngIf="movie.imdbRating && movie.imdbRating !== 'N/A'" 
+                        class="text-slate-700 text-sm font-medium flex items-center gap-1 bg-slate-100 px-2 py-1 rounded-md">
+                    <mat-icon class="text-xs text-yellow-500">star</mat-icon>
+                    {{ movie.imdbRating }}
+                  </span>
                 </div>
               </div>
 
@@ -182,29 +166,44 @@
 
                 <!-- Detalhes em Grid Compacto -->
                 <div class="space-y-2 text-xs">
-                  <div *ngIf="movie.director && movie.director !== 'N/A'" class="flex">
-                    <span class="text-slate-500 font-medium w-12 shrink-0">Dir:</span>
-                    <span class="text-slate-700 line-clamp-1">{{ movie.director }}</span>
+                  <div *ngIf="movie.director && movie.director !== 'N/A'" class="flex items-start">
+                    <mat-icon class="text-slate-500 text-base mr-2 mt-0.5">movie_creation</mat-icon>
+                    <div class="flex-1">
+                      <span class="text-slate-500 font-medium">Diretor:</span>
+                      <span class="text-slate-700 block line-clamp-1">{{ movie.director }}</span>
+                    </div>
                   </div>
                   
-                  <div *ngIf="movie.actors && movie.actors !== 'N/A'" class="flex">
-                    <span class="text-slate-500 font-medium w-12 shrink-0">Cast:</span>
-                    <span class="text-slate-700 line-clamp-2">{{ movie.actors }}</span>
+                  <div *ngIf="movie.actors && movie.actors !== 'N/A'" class="flex items-start">
+                    <mat-icon class="text-slate-500 text-base mr-2 mt-0.5">group</mat-icon>
+                    <div class="flex-1">
+                      <span class="text-slate-500 font-medium">Elenco:</span>
+                      <span class="text-slate-700 block line-clamp-2">{{ movie.actors }}</span>
+                    </div>
                   </div>
                   
-                  <div *ngIf="movie.box_office && movie.box_office !== 'N/A'" class="flex">
-                    <span class="text-slate-500 font-medium w-12 shrink-0">Box:</span>
-                    <span class="text-slate-700">{{ movie.box_office }}</span>
+                  <div *ngIf="movie.boxOffice && movie.boxOffice !== 'N/A'" class="flex items-start">
+                    <mat-icon class="text-slate-500 text-base mr-2 mt-0.5">attach_money</mat-icon>
+                    <div class="flex-1">
+                      <span class="text-slate-500 font-medium">Bilheteria:</span>
+                      <span class="text-slate-700 block">{{ movie.boxOffice }}</span>
+                    </div>
                   </div>
                   
-                  <div *ngIf="movie.awards && movie.awards !== 'N/A'" class="flex">
-                    <span class="text-slate-500 font-medium w-12 shrink-0">Awards:</span>
-                    <span class="text-slate-700 line-clamp-2">{{ movie.awards }}</span>
+                  <div *ngIf="movie.awards && movie.awards !== 'N/A'" class="flex items-start">
+                    <mat-icon class="text-slate-500 text-base mr-2 mt-0.5">emoji_events</mat-icon>
+                    <div class="flex-1">
+                      <span class="text-slate-500 font-medium">Prêmios:</span>
+                      <span class="text-slate-700 block line-clamp-2">{{ movie.awards }}</span>
+                    </div>
                   </div>
                   
-                  <div *ngIf="movie.runtime && movie.runtime !== 'N/A'" class="flex">
-                    <span class="text-slate-500 font-medium w-12 shrink-0">Time:</span>
-                    <span class="text-slate-700">{{ movie.runtime }}</span>
+                  <div *ngIf="movie.runtime && movie.runtime !== 'N/A'" class="flex items-start">
+                    <mat-icon class="text-slate-500 text-base mr-2 mt-0.5">schedule</mat-icon>
+                    <div class="flex-1">
+                      <span class="text-slate-500 font-medium">Duração:</span>
+                      <span class="text-slate-700 block">{{ movie.runtime }}</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -213,9 +212,10 @@
               <div class="space-y-2">
                 <button
                   (click)="deleteMovie(movie.id.toString(), movie.title); $event.stopPropagation()"
-                  class="w-full bg-red-50 hover:bg-red-100 text-red-600 font-medium py-2 px-3 rounded-lg transition duration-200 border border-red-200 text-sm"
+                  class="w-full bg-red-50 hover:bg-red-100 text-red-600 font-medium py-2 px-3 rounded-lg transition duration-200 border border-red-200 text-sm flex items-center justify-center gap-2"
                 >
-                  🗑️ Excluir
+                  <mat-icon class="text-lg">delete</mat-icon>
+                  Excluir
                 </button>
                 
                 <!-- Indicador de clique para voltar -->
@@ -232,7 +232,7 @@
 
     <!-- Mensagem quando não há filmes -->
     <div *ngIf="!loading() && filteredMovies.length === 0" class="text-center py-20">
-      <div class="text-6xl mb-4">🎬</div>
+      <mat-icon class="text-6xl text-slate-400 mb-4">movie</mat-icon>
       <h3 class="text-2xl font-semibold text-slate-800 mb-2">
         {{ searchTitle() ? 'Nenhum filme encontrado' : 'Nenhum filme cadastrado' }}
       </h3>
@@ -246,9 +246,10 @@
       <button
         *ngIf="!searchTitle()"
         (click)="openAddModal()"
-        class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 shadow-sm"
+        class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition duration-200 shadow-sm flex items-center gap-2 mx-auto"
       >
-        ➕ Adicionar Primeiro Filme
+        <mat-icon>add</mat-icon>
+        Adicionar Primeiro Filme
       </button>
     </div>
   </div>
@@ -260,8 +261,9 @@
   >
     <div class="bg-white rounded-xl shadow-2xl w-full max-w-md">
       <!-- Header do Modal -->
-      <div class="bg-indigo-600 rounded-t-xl px-6 py-4">
-        <h2 class="text-xl font-semibold text-white">🎬 Adicionar Novo Filme</h2>
+      <div class="bg-indigo-600 rounded-t-xl px-6 py-4 flex items-center gap-3">
+        <mat-icon class="text-white text-xl">movie</mat-icon>
+        <h2 class="text-xl font-semibold text-white">Adicionar Novo Filme</h2>
       </div>
 
       <!-- Conteúdo do Modal -->
