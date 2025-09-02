@@ -3,31 +3,32 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
 import { moviesService } from '../../../services/api';
+import { Title } from '@angular/platform-browser';
+import { PaginationComponent } from '../../components/pagination/pagination';
 
 interface Movie {
   id: number;
-  title: string;
-  year: string;
-  genre: string;
-  director: string;
-  actors: string;
-  plot: string;
-  poster: string;
-  runtime: string;
+  Title: string;
+  Year: string;
+  Genre: string;
+  Director: string;
+  Actors: string;
+  Plot: string;
+  Poster: string;
+  Runtime: string;
   imdbRating: string;
-  boxOffice: string;
-  awards: string;
-  country: string;
-  language: string;
-  type: string;
-  createdAt: string;
-  updatedAt: string;
+  BoxOffice: string;
+  Awards: string;
+  Country: string;
+  Language: string;
+  Type: string;
 }
 
 @Component({
   selector: 'movie-page',
+  standalone: true,
   templateUrl: './movie-page.html',
-  imports: [CommonModule, FormsModule, MatIconModule],
+  imports: [CommonModule, FormsModule, MatIconModule, PaginationComponent],
 })
 export class MoviePage implements OnInit {
   movies = signal<Movie[]>([]);
@@ -36,6 +37,13 @@ export class MoviePage implements OnInit {
   searchTitle = signal<string>('');
   showAddModal = signal<boolean>(false);
   flippedCards = signal<Set<number>>(new Set()); // Controla quais cards estão virados
+  
+  // Pagination properties
+  currentPage = signal<number>(1);
+  totalPages = signal<number>(1);
+  totalItems = signal<number>(0);
+  itemsPerPage = 10;
+  
 
   async ngOnInit() {
     await this.loadMovies();
@@ -55,11 +63,16 @@ export class MoviePage implements OnInit {
     this.flippedCards.set(flipped);
   }
 
-  async loadMovies() {
+  async loadMovies(page: number = 1) {
     try {
       this.loading.set(true);
-      const response = await moviesService.getMovies();
-      this.movies.set(response.data || response);
+      const response = await moviesService.getMovies(this.itemsPerPage, page);
+      this.movies.set(response.data || response.content);
+      
+      // Atualizar informações de paginação
+      this.currentPage.set(page);
+      this.totalPages.set(response.totalPages || 1);
+      this.totalItems.set(response.totalElements || response.totalItems || 0);
     } catch (error) {
       console.error('Erro ao carregar filmes:', error);
       alert('Erro ao carregar filmes');
@@ -124,10 +137,14 @@ export class MoviePage implements OnInit {
     this.searchTitle.set(title);
   }
 
+  onPageChange(page: number) {
+    this.loadMovies(page);
+  }
+
   get filteredMovies() {
     const search = this.searchTitle().toLowerCase();
     if (!search) return this.movies();
 
-    return this.movies().filter((movie) => movie.title.toLowerCase().includes(search));
+    return this.movies().filter((movie) => movie.Title.toLowerCase().includes(search));
   }
 }

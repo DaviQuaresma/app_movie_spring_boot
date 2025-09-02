@@ -10,7 +10,7 @@ export const routes: Routes = [
   {
     path: 'register',
     loadComponent: () =>
-      import('./components/register/register-page').then((m) => m.RegisterPage),
+      import('./components/register/register-component').then((m) => m.RegisterPage),
   },
   {
     path: 'movies',

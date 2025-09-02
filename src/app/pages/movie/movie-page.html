@@ -100,9 +100,9 @@
               <!-- Poster Background -->
               <div class="absolute inset-0">
                 <img 
-                  *ngIf="movie.poster && movie.poster !== 'N/A'; else placeholderPoster"
-                  [src]="movie.poster" 
-                  [alt]="movie.title"
+                  *ngIf="movie.Poster && movie.Poster !== 'N/A'; else placeholderPoster"
+                  [src]="movie.Poster" 
+                  [alt]="movie.Title"
                   class="w-full h-full object-cover"
                 />
                 <ng-template #placeholderPoster>
@@ -124,15 +124,15 @@
               
               <!-- Informações na parte inferior -->
               <div class="absolute bottom-0 left-0 right-0 p-4 text-white">
-                <h3 class="text-lg font-bold mb-1 line-clamp-2">{{ movie.title }}</h3>
+                <h3 class="text-lg font-bold mb-1 line-clamp-2">{{ movie.Title }}</h3>
                 <div class="flex items-center justify-between">
-                  <span class="text-sm opacity-90">{{ movie.year }}</span>
-                  <span *ngIf="movie.runtime && movie.runtime !== 'N/A'" 
-                        class="text-xs opacity-75">{{ movie.runtime }}</span>
+                  <span class="text-sm opacity-90">{{ movie.Year }}</span>
+                  <span *ngIf="movie.Runtime && movie.Runtime !== 'N/A'" 
+                        class="text-xs opacity-75">{{ movie.Runtime }}</span>
                 </div>
-                <p *ngIf="movie.genre && movie.genre !== 'N/A'" 
-                   class="text-xs opacity-75 mt-1 line-clamp-1">{{ movie.genre }}</p>
-                
+                <p *ngIf="movie.Genre && movie.Genre !== 'N/A'" 
+                   class="text-xs opacity-75 mt-1 line-clamp-1">{{ movie.Genre }}</p>
+
                 <!-- Indicador de clique -->
                 <div class="mt-2 text-center">
                   <span class="text-xs opacity-60">Clique para detalhes</span>
@@ -146,9 +146,9 @@
             <div class="h-full flex flex-col p-4">
               <!-- Título e Ano -->
               <div class="mb-3">
-                <h3 class="text-lg font-bold text-slate-800 mb-1 line-clamp-2">{{ movie.title }}</h3>
+                <h3 class="text-lg font-bold text-slate-800 mb-1 line-clamp-2">{{ movie.Title }}</h3>
                 <div class="flex items-center justify-between">
-                  <span class="text-slate-600 font-medium">{{ movie.year }}</span>
+                  <span class="text-slate-600 font-medium">{{ movie.Year }}</span>
                   <span *ngIf="movie.imdbRating && movie.imdbRating !== 'N/A'" 
                         class="text-slate-700 text-sm font-medium flex items-center gap-1 bg-slate-100 px-2 py-1 rounded-md">
                     <mat-icon class="text-xs text-yellow-500">star</mat-icon>
@@ -159,50 +159,50 @@
 
               <!-- Plot -->
               <div class="flex-1 overflow-y-auto mb-3">
-                <p *ngIf="movie.plot && movie.plot !== 'N/A'" 
+                <p *ngIf="movie.Plot && movie.Plot !== 'N/A'" 
                    class="text-xs text-slate-600 mb-3 line-clamp-4">
-                  {{ movie.plot }}
+                  {{ movie.Plot }}
                 </p>
 
                 <!-- Detalhes em Grid Compacto -->
                 <div class="space-y-2 text-xs">
-                  <div *ngIf="movie.director && movie.director !== 'N/A'" class="flex items-start">
+                  <div *ngIf="movie.Director && movie.Director !== 'N/A'" class="flex items-start">
                     <mat-icon class="text-slate-500 text-base mr-2 mt-0.5">movie_creation</mat-icon>
                     <div class="flex-1">
                       <span class="text-slate-500 font-medium">Diretor:</span>
-                      <span class="text-slate-700 block line-clamp-1">{{ movie.director }}</span>
+                      <span class="text-slate-700 block line-clamp-1">{{ movie.Director }}</span>
                     </div>
                   </div>
-                  
-                  <div *ngIf="movie.actors && movie.actors !== 'N/A'" class="flex items-start">
+
+                  <div *ngIf="movie.Actors && movie.Actors !== 'N/A'" class="flex items-start">
                     <mat-icon class="text-slate-500 text-base mr-2 mt-0.5">group</mat-icon>
                     <div class="flex-1">
                       <span class="text-slate-500 font-medium">Elenco:</span>
-                      <span class="text-slate-700 block line-clamp-2">{{ movie.actors }}</span>
+                      <span class="text-slate-700 block line-clamp-2">{{ movie.Actors }}</span>
                     </div>
                   </div>
-                  
-                  <div *ngIf="movie.boxOffice && movie.boxOffice !== 'N/A'" class="flex items-start">
+
+                  <div *ngIf="movie.BoxOffice && movie.BoxOffice !== 'N/A'" class="flex items-start">
                     <mat-icon class="text-slate-500 text-base mr-2 mt-0.5">attach_money</mat-icon>
                     <div class="flex-1">
                       <span class="text-slate-500 font-medium">Bilheteria:</span>
-                      <span class="text-slate-700 block">{{ movie.boxOffice }}</span>
+                      <span class="text-slate-700 block">{{ movie.BoxOffice }}</span>
                     </div>
                   </div>
-                  
-                  <div *ngIf="movie.awards && movie.awards !== 'N/A'" class="flex items-start">
+
+                  <div *ngIf="movie.Awards && movie.Awards !== 'N/A'" class="flex items-start">
                     <mat-icon class="text-slate-500 text-base mr-2 mt-0.5">emoji_events</mat-icon>
                     <div class="flex-1">
                       <span class="text-slate-500 font-medium">Prêmios:</span>
-                      <span class="text-slate-700 block line-clamp-2">{{ movie.awards }}</span>
+                      <span class="text-slate-700 block line-clamp-2">{{ movie.Awards }}</span>
                     </div>
                   </div>
-                  
-                  <div *ngIf="movie.runtime && movie.runtime !== 'N/A'" class="flex items-start">
+
+                  <div *ngIf="movie.Runtime && movie.Runtime !== 'N/A'" class="flex items-start">
                     <mat-icon class="text-slate-500 text-base mr-2 mt-0.5">schedule</mat-icon>
                     <div class="flex-1">
                       <span class="text-slate-500 font-medium">Duração:</span>
-                      <span class="text-slate-700 block">{{ movie.runtime }}</span>
+                      <span class="text-slate-700 block">{{ movie.Runtime }}</span>
                     </div>
                   </div>
                 </div>
@@ -211,7 +211,7 @@
               <!-- Botões na parte inferior -->
               <div class="space-y-2">
                 <button
-                  (click)="deleteMovie(movie.id.toString(), movie.title); $event.stopPropagation()"
+                  (click)="deleteMovie(movie.id.toString(), movie.Title); $event.stopPropagation()"
                   class="w-full bg-red-50 hover:bg-red-100 text-red-600 font-medium py-2 px-3 rounded-lg transition duration-200 border border-red-200 text-sm flex items-center justify-center gap-2"
                 >
                   <mat-icon class="text-lg">delete</mat-icon>
@@ -228,6 +228,17 @@
 
         </div>
       </div>
+    </div>
+
+    <!-- Componente de Paginação -->
+    <div *ngIf="!loading() && filteredMovies.length > 0" class="mt-8">
+      <app-pagination
+        [currentPage]="currentPage()"
+        [totalPages]="totalPages()"
+        [itemsPerPage]="itemsPerPage"
+        [totalItems]="totalItems()"
+        (pageChange)="onPageChange($event)">
+      </app-pagination>
     </div>
 
     <!-- Mensagem quando não há filmes -->
