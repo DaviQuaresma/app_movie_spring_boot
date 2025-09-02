@@ -1,5 +1,5 @@
-import { Component, signal } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, signal, Inject, PLATFORM_ID } from '@angular/core';
+import { CommonModule, isPlatformBrowser } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
@@ -20,11 +20,19 @@ import { AuthService } from '../../../services/auth.service';
 })
 export class HeaderComponent {
   isMenuOpen = signal<boolean>(false);
-  
+  emailStorage = signal<string>('');
+
   constructor(
     private router: Router,
-    private authService: AuthService
-  ) {}
+    private authService: AuthService,
+    @Inject(PLATFORM_ID) private platformId: Object
+  ) {
+    // Inicializar o email do localStorage apenas no browser
+    if (isPlatformBrowser(this.platformId)) {
+      const userEmail = localStorage.getItem('user');
+      this.emailStorage.set(userEmail || 'Usuário');
+    }
+  }
 
   toggleMobileMenu(): void {
     this.isMenuOpen.set(!this.isMenuOpen());
@@ -49,15 +57,20 @@ export class HeaderComponent {
   }
 
   get currentUser() {
+    const email = this.emailStorage();
     return {
-      name: 'João Silva',
-      email: 'joao@email.com',
+      name: email || 'Usuário',
+      email: email || 'user@email.com',
       avatar: ''
     };
   }
 
   get userInitials(): string {
     const name = this.currentUser.name;
+    if (!name || name === 'Usuário') {
+      return 'US';
+    }
+    
     return name
       .split(' ')
       .map(n => n[0])

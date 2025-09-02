@@ -257,12 +257,12 @@ export class StatisticsPage implements OnInit {
     const moviesWithAwards = movies.filter(movie => 
       movie.awards && 
       movie.awards !== 'N/A' && 
-      !movie.awards.toLowerCase().includes('nominations')
+      movie.awards.trim() !== ''
     );
 
     return {
       total: moviesWithAwards.length,
-      percentage: Math.round((moviesWithAwards.length / movies.length) * 100),
+      percentage: movies.length > 0 ? Math.round((moviesWithAwards.length / movies.length) * 100) : 0,
       topAwardedMovies: moviesWithAwards
         .slice(0, 3)
         .map(movie => ({

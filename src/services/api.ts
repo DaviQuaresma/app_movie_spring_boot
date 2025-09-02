@@ -9,8 +9,11 @@ export const authService = {
   async login(email: string, password: string) {
     const response = await api.post('/auth/login', { email, password });
 
+    console.log(response);
+
     if (response.status === 200) {
       localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', response.data.email);
       return response.data;
     }
     throw new Error(response.data.message || 'Failed to login');
