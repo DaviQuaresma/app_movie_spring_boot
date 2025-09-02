@@ -1,0 +1,209 @@
+<header class="bg-white shadow-lg border-b border-slate-200 sticky top-0 z-50">
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-16">
+      
+      <!-- Logo/Brand -->
+      <div class="flex items-center space-x-3">
+        <div class="flex items-center justify-center w-10 h-10 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-lg">
+          <mat-icon class="text-white text-xl">movie</mat-icon>
+        </div>
+        <div class="hidden sm:block">
+          <h1 class="text-xl font-bold text-slate-800">MovieApp</h1>
+          <p class="text-xs text-slate-500 -mt-1">Sua coleção de filmes</p>
+        </div>
+      </div>
+
+      <!-- Desktop Navigation -->
+      <nav class="hidden md:flex items-center space-x-1">
+        <a
+          [routerLink]="'/movies'"
+          [class]="'px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 ' + 
+                   (isActiveRoute('/movies') 
+                     ? 'bg-indigo-100 text-indigo-700 shadow-sm' 
+                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100')"
+        >
+          <mat-icon class="text-lg">local_movies</mat-icon>
+          <span>Filmes</span>
+        </a>
+        
+        <a
+          [routerLink]="'/statistics'"
+          [class]="'px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 ' + 
+                   (isActiveRoute('/statistics') 
+                     ? 'bg-indigo-100 text-indigo-700 shadow-sm' 
+                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100')"
+        >
+          <mat-icon class="text-lg">analytics</mat-icon>
+          <span>Estatísticas</span>
+        </a>
+        
+        <a
+          [routerLink]="'/favorites'"
+          [class]="'px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 flex items-center space-x-2 ' + 
+                   (isActiveRoute('/favorites') 
+                     ? 'bg-indigo-100 text-indigo-700 shadow-sm' 
+                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100')"
+        >
+          <mat-icon class="text-lg">favorite</mat-icon>
+          <span>Favoritos</span>
+        </a>
+      </nav>
+
+      <!-- User Menu & Actions -->
+      <div class="flex items-center space-x-3">
+        
+        <!-- Search Button (Desktop) -->
+        <button
+          class="hidden lg:flex items-center justify-center w-10 h-10 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all duration-200"
+          title="Pesquisar"
+        >
+          <mat-icon>search</mat-icon>
+        </button>
+
+        <!-- Notifications Button -->
+        <button
+          class="hidden lg:flex items-center justify-center w-10 h-10 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all duration-200 relative"
+          title="Notificações"
+        >
+          <mat-icon>notifications</mat-icon>
+          <!-- Notification Badge -->
+          <span class="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+        </button>
+
+        <!-- User Profile Dropdown -->
+        <div class="relative">
+          <button
+            [matMenuTriggerFor]="userMenu"
+            class="flex items-center space-x-3 p-2 rounded-lg hover:bg-slate-100 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+          >
+            <!-- User Avatar -->
+            <div class="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center text-white text-sm font-semibold">
+              {{ userInitials }}
+            </div>
+            
+            <!-- User Info (Hidden on small screens) -->
+            <div class="hidden lg:block text-left">
+              <p class="text-sm font-medium text-slate-800">{{ currentUser.name }}</p>
+              <p class="text-xs text-slate-500">{{ currentUser.email }}</p>
+            </div>
+            
+            <!-- Dropdown Arrow -->
+            <mat-icon class="text-slate-400 text-lg">keyboard_arrow_down</mat-icon>
+          </button>
+
+          <!-- User Dropdown Menu -->
+          <mat-menu #userMenu="matMenu" class="mt-2">
+            <div class="px-4 py-3 border-b border-slate-200">
+              <p class="text-sm font-medium text-slate-800">{{ currentUser.name }}</p>
+              <p class="text-xs text-slate-500">{{ currentUser.email }}</p>
+            </div>
+            
+            <button mat-menu-item class="flex items-center space-x-3 px-4 py-3 hover:bg-slate-50">
+              <mat-icon class="text-slate-600">person</mat-icon>
+              <span>Meu Perfil</span>
+            </button>
+            
+            <button mat-menu-item class="flex items-center space-x-3 px-4 py-3 hover:bg-slate-50">
+              <mat-icon class="text-slate-600">settings</mat-icon>
+              <span>Configurações</span>
+            </button>
+            
+            <button mat-menu-item class="flex items-center space-x-3 px-4 py-3 hover:bg-slate-50">
+              <mat-icon class="text-slate-600">help</mat-icon>
+              <span>Ajuda</span>
+            </button>
+            
+            <div class="border-t border-slate-200 my-1"></div>
+            
+            <button 
+              mat-menu-item 
+              (click)="logout()"
+              class="flex items-center space-x-3 px-4 py-3 hover:bg-red-50 text-red-600"
+            >
+              <mat-icon>logout</mat-icon>
+              <span>Sair</span>
+            </button>
+          </mat-menu>
+        </div>
+
+        <!-- Mobile Menu Button -->
+        <button
+          (click)="toggleMobileMenu()"
+          class="md:hidden flex items-center justify-center w-10 h-10 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-all duration-200"
+        >
+          <mat-icon>{{ isMenuOpen() ? 'close' : 'menu' }}</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Navigation Menu -->
+    <div 
+      [class]="'md:hidden overflow-hidden transition-all duration-300 ease-in-out ' + 
+               (isMenuOpen() ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0')"
+    >
+      <div class="py-3 space-y-1 border-t border-slate-200">
+        <a
+          [routerLink]="'/movies'"
+          (click)="closeMobileMenu()"
+          [class]="'flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ' + 
+                   (isActiveRoute('/movies') 
+                     ? 'bg-indigo-100 text-indigo-700' 
+                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100')"
+        >
+          <mat-icon class="text-lg">local_movies</mat-icon>
+          <span>Filmes</span>
+        </a>
+        
+        <a
+          [routerLink]="'/statistics'"
+          (click)="closeMobileMenu()"
+          [class]="'flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ' + 
+                   (isActiveRoute('/statistics') 
+                     ? 'bg-indigo-100 text-indigo-700' 
+                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100')"
+        >
+          <mat-icon class="text-lg">analytics</mat-icon>
+          <span>Estatísticas</span>
+        </a>
+        
+        <a
+          [routerLink]="'/favorites'"
+          (click)="closeMobileMenu()"
+          [class]="'flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ' + 
+                   (isActiveRoute('/favorites') 
+                     ? 'bg-indigo-100 text-indigo-700' 
+                     : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100')"
+        >
+          <mat-icon class="text-lg">favorite</mat-icon>
+          <span>Favoritos</span>
+        </a>
+
+        <!-- Mobile Actions -->
+        <div class="border-t border-slate-200 pt-3 mt-3">
+          <button
+            class="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all duration-200 w-full"
+          >
+            <mat-icon class="text-lg">search</mat-icon>
+            <span>Pesquisar</span>
+          </button>
+          
+          <button
+            class="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-all duration-200 w-full"
+          >
+            <mat-icon class="text-lg">notifications</mat-icon>
+            <span>Notificações</span>
+            <span class="ml-auto w-2 h-2 bg-red-500 rounded-full"></span>
+          </button>
+          
+          <button
+            (click)="logout()"
+            class="flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium text-red-600 hover:text-red-700 hover:bg-red-50 transition-all duration-200 w-full"
+          >
+            <mat-icon class="text-lg">logout</mat-icon>
+            <span>Sair</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>

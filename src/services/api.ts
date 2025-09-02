@@ -52,9 +52,10 @@ export const authService = {
 };
 
 export const moviesService = {
-  async getMovies() {
+  async getMovies(totalPages: number, page: number) {
     const response = await api.get('movie', {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+      params: { totalPages, page },
     });
 
     if (response.status === 403) {

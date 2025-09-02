@@ -1,2 +1,23 @@
-/* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
+
+.main {
+  min-height: 100vh;
+  transition: padding-top 0.3s ease-in-out;
+}
+
+.main.with-header {
+  padding-top: 0; 
+}
+
+app-header {
+  transition: all 0.3s ease-in-out;
+}
+
+.main {
+  position: relative;
+  z-index: 1;
+}
+
+.container {
+  position: relative;
+}
