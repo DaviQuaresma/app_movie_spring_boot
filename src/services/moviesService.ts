@@ -1,65 +1,33 @@
-import api from "./api";
+import { Injectable, inject } from '@angular/core';
+import { ApiService } from './api.service';
 
-export const moviesService = {
-  async getAllMovies() {
-    const response = await api.get('movie/allMovies', {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-    });
+@Injectable({
+  providedIn: 'root',
+})
+export class MoviesService {
+  private api = inject(ApiService);
 
-    if (response.status === 403) {
-      throw new Error('Acesso negado');
-    }
+  GetAllMovies() {
+    return this.api.get('movie/allMovies');
+  }
 
-    return response.data;
-  },
-
-  async getMovies(totalPages: number, page: number) {
-    const response = await api.get('movie', {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+  GetMovies(totalPages: number, page: number) {
+    return this.api.get('movie', {
       params: { totalPages, page },
     });
+  }
 
-    if (response.status === 403) {
-      throw new Error('Acesso negado');
-    }
+  GetMoviesById(id: string) {
+    return this.api.get(`movie/${id}`);
+  }
 
-    return response.data;
-  },
-
-  async getMovieById(id: string) {
-    const response = await api.get(`movie/${id}`, {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-    });
-
-    if (response.status === 403) {
-      throw new Error('Acesso negado');
-    }
-
-    return response.data;
-  },
-
-  async getNewMovie(title: string) {
-    const response = await api.get('movie/search', {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
+  GetNewMovie(title: string) {
+    return this.api.get('movie/search', {
       params: { title },
     });
+  }
 
-    if (response.status === 403) {
-      throw new Error('Acesso negado');
-    }
-
-    return response.data;
-  },
-
-  async deleteMovie(id: string) {
-    const response = await api.delete(`/movie/${id}`, {
-      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-    });
-
-    if (response.status === 403) {
-      throw new Error('Acesso negado');
-    }
-
-    return response.data;
-  },
-};
+  DeleteMovie(id: string) {
+    return this.api.delete(`movie/${id}`);
+  }
+}

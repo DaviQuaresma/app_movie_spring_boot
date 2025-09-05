@@ -24,7 +24,28 @@ export class AuthService {
   private checkInitialAuthState(): void {
     if (isPlatformBrowser(this.platformId)) {
       const token = localStorage.getItem('token');
-      this.isAuthenticatedSignal.set(!!token);
+      
+      if (token) {
+        // Verifica se o token não está expirado
+        try {
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          const currentTime = Math.floor(Date.now() / 1000);
+          
+          if (payload.exp && payload.exp > currentTime) {
+            this.isAuthenticatedSignal.set(true);
+          } else {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            this.isAuthenticatedSignal.set(false);
+          }
+        } catch (error) {
+          localStorage.removeItem('token');
+          localStorage.removeItem('user');
+          this.isAuthenticatedSignal.set(false);
+        }
+      } else {
+        this.isAuthenticatedSignal.set(false);
+      }
     }
   }
 
@@ -46,7 +67,27 @@ export class AuthService {
 
   getToken(): string | null {
     if (isPlatformBrowser(this.platformId)) {
-      return localStorage.getItem('token');
+      const token = localStorage.getItem('token');
+      
+      if (token) {
+        try {
+          // Verifica se o token não está expirado
+          const payload = JSON.parse(atob(token.split('.')[1]));
+          const currentTime = Math.floor(Date.now() / 1000);
+          
+          if (payload.exp && payload.exp > currentTime) {
+            return token;
+          } else {
+            console.log('⚠️ Token expirado detectado no getToken(), removendo...');
+            this.logout();
+            return null;
+          }
+        } catch (error) {
+          console.log('❌ Token inválido detectado no getToken(), removendo...');
+          this.logout();
+          return null;
+        }
+      }
     }
     return null;
   }
