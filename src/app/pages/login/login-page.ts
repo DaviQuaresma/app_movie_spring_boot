@@ -29,11 +29,9 @@ export class LoginPage {
   login() {
     authService.login(this.email(), this.password()).then(() => {
       console.log('Login successful');
-      // Redirecionar para a página de filmes ou dashboard após login bem-sucedido
       this.route.navigate(['/movies']);
     }).catch((error: any) => {
       console.error('Login failed', error);
-      // Aqui você pode exibir uma mensagem de erro para o usuário
       alert('Erro no login: ' + error.message);
     });
   }
