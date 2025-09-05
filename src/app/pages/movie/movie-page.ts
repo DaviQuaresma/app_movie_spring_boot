@@ -2,7 +2,7 @@ import { Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-import { moviesService } from '../../../services/api';
+import { moviesService } from '../../../services/moviesService';
 import { Title } from '@angular/platform-browser';
 import { PaginationComponent } from '../../components/pagination/pagination';
 

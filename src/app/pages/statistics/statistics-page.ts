@@ -1,7 +1,7 @@
 import { Component, OnInit, signal, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
-import { moviesService } from '../../../services/api';
+import { moviesService } from '../../../services/moviesService';
 
 interface Movie {
   id: number;

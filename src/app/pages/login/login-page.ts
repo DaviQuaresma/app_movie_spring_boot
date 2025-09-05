@@ -1,5 +1,5 @@
 import { Component, signal } from "@angular/core";
-import { authService } from "../../../services/api";
+import { authService } from "../../../services/authService";
 import { Router } from "@angular/router";
 
 @Component({
