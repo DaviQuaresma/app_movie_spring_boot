@@ -1,8 +1,8 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, signal, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
-import { moviesService } from '../../../services/moviesService';
+import { MoviesService } from '../../../services/moviesService';
 import { Title } from '@angular/platform-browser';
 import { PaginationComponent } from '../../components/pagination/pagination';
 
@@ -31,22 +31,24 @@ interface Movie {
   imports: [CommonModule, FormsModule, MatIconModule, PaginationComponent],
 })
 export class MoviePage implements OnInit {
+  private movieService = inject(MoviesService);
+  
   movies = signal<Movie[]>([]);
   loading = signal<boolean>(false);
   newMovieTitle = signal<string>('');
   searchTitle = signal<string>('');
   showAddModal = signal<boolean>(false);
-  flippedCards = signal<Set<number>>(new Set()); // Controla quais cards estão virados
+  flippedCards = signal<Set<number>>(new Set());
   
-  // Pagination properties
+  // Pagination
   currentPage = signal<number>(1);
   totalPages = signal<number>(1);
   totalItems = signal<number>(0);
   itemsPerPage = 10;
   
 
-  async ngOnInit() {
-    await this.loadMovies();
+  ngOnInit() {
+    this.loadMovies();
   }
 
   isFlipped(index: number): boolean {
@@ -63,61 +65,71 @@ export class MoviePage implements OnInit {
     this.flippedCards.set(flipped);
   }
 
-  async loadMovies(page: number = 1) {
-    try {
-      this.loading.set(true);
-      const response = await moviesService.getMovies(this.itemsPerPage, page);
-      this.movies.set(response.data || response.content);
-      
-      // Atualizar informações de paginação
-      this.currentPage.set(page);
-      this.totalPages.set(response.totalPages || 1);
-      this.totalItems.set(response.totalElements || response.totalItems || 0);
-    } catch (error) {
-      console.error('Erro ao carregar filmes:', error);
-      alert('Erro ao carregar filmes');
-    } finally {
-      this.loading.set(false);
-    }
+  loadMovies(page: number = 1) {
+    this.loading.set(true);
+    
+    this.movieService.GetMovies(this.itemsPerPage, page).subscribe({
+      next: (response: any) => {
+        this.movies.set(response.data || response.content);
+        
+        this.currentPage.set(page);
+        this.totalPages.set(response.totalPages || 1);
+        this.totalItems.set(response.totalElements || response.totalItems || 0);
+        this.loading.set(false);
+      },
+      error: (error) => {
+        console.error('Erro ao carregar filmes:', error);
+        alert('Erro ao carregar filmes');
+        this.loading.set(false);
+      }
+    });
   }
 
-  async addMovie() {
+  addMovie() {
     if (!this.newMovieTitle().trim()) {
       alert('Digite o título do filme');
       return;
     }
 
-    try {
-      this.loading.set(true);
-      await moviesService.getNewMovie(this.newMovieTitle());
-      this.newMovieTitle.set('');
-      this.showAddModal.set(false);
-      await this.loadMovies(); // Recarrega a lista
-      alert('Filme adicionado com sucesso!');
-    } catch (error) {
-      console.error('Erro ao adicionar filme:', error);
-      alert('Erro ao adicionar filme');
-    } finally {
-      this.loading.set(false);
-    }
+    this.loading.set(true);
+    
+    this.movieService.GetNewMovie(this.newMovieTitle()).subscribe({
+      next: () => {
+        this.newMovieTitle.set('');
+        this.showAddModal.set(false);
+        alert('Filme adicionado com sucesso!');
+        this.loadMovies(); // Recarrega a lista
+        this.loading.set(false);
+      },
+      error: (error) => {
+        console.error('Erro ao adicionar filme:', error);
+        alert('Erro ao adicionar filme');
+        this.loading.set(false);
+      }
+    });
   }
 
-  async deleteMovie(id: string, title: string) {
+  deleteMovie(id: string, title: string, event: Event) {
+    event.stopPropagation(); // Previne que o clique propague para o card
+    
     if (!confirm(`Tem certeza que deseja excluir "${title}"?`)) {
       return;
     }
 
-    try {
-      this.loading.set(true);
-      await moviesService.deleteMovie(id);
-      await this.loadMovies(); // Recarrega a lista
-      alert('Filme excluído com sucesso!');
-    } catch (error) {
-      console.error('Erro ao excluir filme:', error);
-      alert('Erro ao excluir filme');
-    } finally {
-      this.loading.set(false);
-    }
+    this.loading.set(true);
+    
+    this.movieService.DeleteMovie(id).subscribe({
+      next: () => {
+        alert('Filme excluído com sucesso!');
+        this.loadMovies(); // Recarrega a lista
+        this.loading.set(false);
+      },
+      error: (error) => {
+        console.error('Erro ao excluir filme:', error);
+        alert('Erro ao excluir filme');
+        this.loading.set(false);
+      }
+    });
   }
 
   openAddModal() {

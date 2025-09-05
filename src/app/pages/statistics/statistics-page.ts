@@ -1,7 +1,7 @@
-import { Component, OnInit, signal, computed } from '@angular/core';
+import { MoviesService } from './../../../services/moviesService';
+import { Component, OnInit, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
-import { moviesService } from '../../../services/moviesService';
 
 interface Movie {
   id: number;
@@ -47,23 +47,29 @@ interface DirectorStats {
   templateUrl: './statistics-page.html'
 })
 export class StatisticsPage implements OnInit {
+  private movieService = inject(MoviesService);
+  
   movies = signal<Movie[]>([]);
   loading = signal<boolean>(false);
 
-  async ngOnInit() {
-    await this.loadAllMovies();
+  ngOnInit() {
+    this.loadAllMovies();
   }
 
-  async loadAllMovies() {
-    try {
-      this.loading.set(true);
-      const response = await moviesService.getAllMovies();
-      this.movies.set(response.data || response.content || response);
-    } catch (error) {
-      console.error('Erro ao carregar estatísticas:', error);
-    } finally {
-      this.loading.set(false);
-    }
+  loadAllMovies() {
+    this.loading.set(true);
+    
+    this.movieService.GetAllMovies().subscribe({
+      next: (response: any) => {
+        this.movies.set(response.data || response.content || response);
+        this.loading.set(false);
+      },
+      error: (err) => {
+        console.error('Erro ao carregar estatísticas:', err);
+        alert('Erro ao carregar estatísticas: ' + err.message);
+        this.loading.set(false);
+      }
+    });
   }
 
   // Estatísticas computadas

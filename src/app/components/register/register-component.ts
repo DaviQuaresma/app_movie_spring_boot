@@ -1,6 +1,7 @@
-import { Component } from "@angular/core";
+import { Component, inject } from "@angular/core";
 import { FormsModule } from '@angular/forms';
-import { authService } from "../../../services/authService";
+import { UserService } from "../../../services/userService";
+import { AuthService } from "../../../services/auth.service";
 import { Router } from "@angular/router";
 
 
@@ -11,6 +12,9 @@ import { Router } from "@angular/router";
 })
 
 export class RegisterPage {
+    private userService = inject(UserService);
+    private authService = inject(AuthService);
+    
     public email: string = '';
     public password: string = '';
     public fullname: string = '';
@@ -34,16 +38,22 @@ export class RegisterPage {
     }
 
     createAccount() {
-        try {
-            if (this.email && this.password && this.fullname) {
-                return authService.create(this.email, this.password, this.fullname);
-            } else {
-                throw new Error('Todos os campos são obrigatórios.');
-            }
-        } catch (error) {
-            console.error('Erro ao criar conta:', error);
+        if (!this.email || !this.password || !this.fullname) {
+            alert('Todos os campos são obrigatórios.');
+            return;
         }
-        return;
+
+        this.userService.Create(this.email, this.password, this.fullname).subscribe({
+            next: (response) => {
+                console.log('Conta criada com sucesso', response);
+                alert('Conta criada com sucesso! Faça login para continuar.');
+                this.route.navigate(['/login']);
+            },
+            error: (error) => {
+                console.error('Erro ao criar conta:', error);
+                alert('Erro ao criar conta: ' + error.message);
+            }
+        });
     }
 
 }
