@@ -21,3 +21,73 @@ app-header {
 .container {
   position: relative;
 }
+
+/* Overlay backdrop */
+.cdk-overlay-backdrop {
+  background-color: rgba(0, 0, 0, 0.32) !important;
+}
+
+/* Estilos para o mat-menu dropdown */
+.mat-mdc-menu-panel {
+  background-color: white !important;
+  box-shadow: 0 10px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1) !important;
+  border: 1px solid rgb(226 232 240) !important;
+  border-radius: 0.5rem !important;
+  min-width: 200px !important;
+  max-width: 280px !important;
+  z-index: 1000 !important;
+}
+
+.mat-mdc-menu-content {
+  padding: 0.5rem !important;
+}
+
+.mat-mdc-menu-item {
+  background-color: transparent !important;
+  color: rgb(51 65 85) !important;
+  font-size: 0.875rem !important;
+  line-height: 1.25rem !important;
+  padding: 0.75rem 1rem !important;
+  border-radius: 0.375rem !important;
+  margin: 0.125rem !important;
+  transition: all 0.2s ease-in-out !important;
+  min-height: auto !important;
+  height: auto !important;
+}
+
+.mat-mdc-menu-item:hover {
+  background-color: rgb(248 250 252) !important;
+  color: rgb(15 23 42) !important;
+}
+
+.mat-mdc-menu-item.mat-mdc-menu-item-highlighted {
+  background-color: rgb(248 250 252) !important;
+}
+
+.mat-mdc-menu-item .mat-icon {
+  color: rgb(100 116 139) !important;
+  margin-right: 0.75rem !important;
+  font-size: 1.125rem !important;
+  width: 1.125rem !important;
+  height: 1.125rem !important;
+}
+
+/* Estilo específico para o item de logout */
+.mat-mdc-menu-item.text-red-600 {
+  color: rgb(220 38 38) !important;
+}
+
+.mat-mdc-menu-item.text-red-600:hover {
+  background-color: rgb(254 242 242) !important;
+  color: rgb(185 28 28) !important;
+}
+
+.mat-mdc-menu-item.text-red-600 .mat-icon {
+  color: rgb(220 38 38) !important;
+}
+
+/* Separador no menu */
+.mat-mdc-menu-item + .border-t {
+  border-top: 1px solid rgb(226 232 240) !important;
+  margin: 0.25rem 0 !important;
+}

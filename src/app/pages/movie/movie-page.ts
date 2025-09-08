@@ -7,7 +7,9 @@ import { Title } from '@angular/platform-browser';
 import { PaginationComponent } from '../../components/pagination/pagination';
 
 interface Movie {
-  id: number;
+  id?: number;
+  movieId?: number;
+  imdbID?: string;
   Title: string;
   Year: string;
   Genre: string;
@@ -55,7 +57,11 @@ export class MoviePage implements OnInit {
     return this.flippedCards().has(index);
   }
 
-  toggleFlip(index: number): void {
+  toggleFlip(index: number, event?: Event): void {
+    if (event && (event.target as HTMLElement).tagName === 'BUTTON') {
+      return;
+    }
+    
     const flipped = new Set(this.flippedCards());
     if (flipped.has(index)) {
       flipped.delete(index);
@@ -70,7 +76,10 @@ export class MoviePage implements OnInit {
     
     this.movieService.GetMovies(this.itemsPerPage, page).subscribe({
       next: (response: any) => {
-        this.movies.set(response.data || response.content);
+        console.log('Resposta da API:', response);
+        console.log('Dados dos filmes:', response.data || response.content);
+        
+        this.movies.set(response.data || response.content || []);
         
         this.currentPage.set(page);
         this.totalPages.set(response.totalPages || 1);
@@ -109,19 +118,33 @@ export class MoviePage implements OnInit {
     });
   }
 
-  deleteMovie(id: string, title: string, event: Event) {
+  deleteMovie(movie: Movie, event: Event) {
     event.stopPropagation(); // Previne que o clique propague para o card
+    event.preventDefault(); // Previne comportamentos padrão
     
-    if (!confirm(`Tem certeza que deseja excluir "${title}"?`)) {
+    console.log('Tentando deletar filme:', movie);
+    
+    // Verifica se o ID existe (pode ser 'id', 'movieId', 'imdbID', etc.)
+    const movieId = movie.id || (movie as any).movieId || (movie as any).imdbID;
+    
+    if (!movieId) {
+      console.error('ID do filme não encontrado:', movie);
+      alert('Erro: ID do filme não encontrado');
+      return;
+    }
+    
+    if (!confirm(`Tem certeza que deseja excluir "${movie.Title}"?`)) {
       return;
     }
 
     this.loading.set(true);
+    console.log('Deletando filme com ID:', movieId);
     
-    this.movieService.DeleteMovie(id).subscribe({
+    this.movieService.DeleteMovie(movieId.toString()).subscribe({
       next: () => {
+        console.log('Filme deletado com sucesso');
         alert('Filme excluído com sucesso!');
-        this.loadMovies(); // Recarrega a lista
+        this.loadMovies(this.currentPage()); // Recarrega a página atual
         this.loading.set(false);
       },
       error: (error) => {

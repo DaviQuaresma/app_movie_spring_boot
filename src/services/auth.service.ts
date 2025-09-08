@@ -78,12 +78,10 @@ export class AuthService {
           if (payload.exp && payload.exp > currentTime) {
             return token;
           } else {
-            console.log('⚠️ Token expirado detectado no getToken(), removendo...');
             this.logout();
             return null;
           }
         } catch (error) {
-          console.log('❌ Token inválido detectado no getToken(), removendo...');
           this.logout();
           return null;
         }

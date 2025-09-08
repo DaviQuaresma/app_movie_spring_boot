@@ -90,7 +90,7 @@
         *ngFor="let movie of filteredMovies; let i = index"
         class="flip-card h-96"
         [class.flipped]="isFlipped(i)"
-        (click)="toggleFlip(i)"
+        (click)="toggleFlip(i, $event)"
       >
         <div class="flip-card-inner shadow-lg hover:shadow-xl transition-shadow duration-300">
           
@@ -211,7 +211,7 @@
               <!-- Botões na parte inferior -->
               <div class="space-y-2">
                 <button
-                  (click)="deleteMovie(movie.id.toString(), movie.Title, $event)"
+                  (click)="deleteMovie(movie, $event)"
                   class="w-full bg-red-50 hover:bg-red-100 text-red-600 font-medium py-2 px-3 rounded-lg transition duration-200 border border-red-200 text-sm flex items-center justify-center gap-2"
                 >
                   <mat-icon class="text-lg">delete</mat-icon>

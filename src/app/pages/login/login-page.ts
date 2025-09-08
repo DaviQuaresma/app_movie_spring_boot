@@ -1,20 +1,30 @@
-import { Component, signal, inject } from '@angular/core';
+import { Component, signal, inject, OnInit } from '@angular/core';
 import { UserService } from '../../../services/userService';
 import { AuthService } from '../../../services/auth.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'login-page',
   templateUrl: './login-page.html',
 })
-export class LoginPage {
+export class LoginPage implements OnInit {
   private userService = inject(UserService);
   private authService = inject(AuthService);
+  private activatedRoute = inject(ActivatedRoute);
 
   email = signal<string>('');
   password = signal<string>('');
+  oauthError = signal<string>('');
 
   constructor(private route: Router) {}
+
+  ngOnInit() {
+    this.activatedRoute.queryParams.subscribe((params) => {
+      if (params['error'] === 'oauth_failed') {
+        this.oauthError.set('Erro no login social. Tente novamente ou use email/senha.');
+      }
+    });
+  }
 
   irParaCadastro() {
     this.route.navigate(['/register']);
@@ -22,10 +32,12 @@ export class LoginPage {
 
   setEmail(newEmail: string) {
     this.email.set(newEmail);
+    this.oauthError.set('');
   }
 
   setPassword(newPassword: string) {
     this.password.set(newPassword);
+    this.oauthError.set('');
   }
 
   login() {
@@ -35,22 +47,13 @@ export class LoginPage {
       localStorage.removeItem('user');
     }
 
-    const loginObservable = this.userService.Login(this.email(), this.password());
-
-    loginObservable.subscribe({
+    this.userService.Login(this.email(), this.password()).subscribe({
       next: (response) => {
+
         if (response.token) {
           this.authService.login(response.token);
           localStorage.setItem('user', response.email);
-
-          const savedToken = localStorage.getItem('token');
-          const authState = this.authService.isAuthenticated();
-
-          if (savedToken) {
-            this.route.navigate(['/movies']);
-          } else {
-            alert('Erro: Token não foi salvo. Verifique o console.');
-          }
+          this.route.navigate(['/movies']);
         } else {
           alert('Erro: Token não recebido do servidor');
         }
@@ -59,7 +62,24 @@ export class LoginPage {
         const errorMessage = error.error?.message || error.message || 'Erro desconhecido no login';
         alert('Erro no login: ' + errorMessage);
       },
-      complete: () => {},
     });
+  }
+
+  loginWithGoogle() {
+    this.oauthError.set('');
+    try {
+      window.location.href = 'http://localhost:8005/oauth2/authorization/google';
+    } catch (error) {
+      this.oauthError.set('Erro ao conectar com Google. Tente novamente.');
+    }
+  }
+
+  loginWithGitHub() {
+    this.oauthError.set('');
+    try {
+      window.location.href = 'http://localhost:8005/oauth2/authorization/github';
+    } catch (error) {
+      this.oauthError.set('Erro ao conectar com GitHub. Tente novamente.');
+    }
   }
 }
