@@ -23,7 +23,6 @@ export class AuthGuard implements CanActivate {
 
     return this.userService.Me().pipe(
       map(() => {
-        console.log('Token válido, acesso permitido');
         return true;
       }),
       catchError((error) => {
@@ -33,7 +32,7 @@ export class AuthGuard implements CanActivate {
             error.message?.includes('JWT expired') ||
             error.message?.includes('403')) {
           console.log('Token expirado ou inválido, redirecionando para login');
-          this.authService.logout(); // Usa o método logout do AuthService
+          this.authService.logout(); 
         }
         
         this.router.navigate(['/login']);

@@ -76,8 +76,6 @@ export class MoviePage implements OnInit {
     
     this.movieService.GetMovies(this.itemsPerPage, page).subscribe({
       next: (response: any) => {
-        console.log('Resposta da API:', response);
-        console.log('Dados dos filmes:', response.data || response.content);
         
         this.movies.set(response.data || response.content || []);
         

@@ -43,8 +43,6 @@ export class OAuthCallbackComponent implements OnInit {
       if (response.ok) {
         const data = await response.json();
 
-        console.log('Login social realizado:', data);
-
         if (data.token) {
           this.authService.login(data.token);
 
