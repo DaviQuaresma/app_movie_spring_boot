@@ -60,6 +60,7 @@ export class AuthService {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.removeItem('token');
       localStorage.removeItem('user');
+      cookieStore.delete('refreshToken');
     }
     this.isAuthenticatedSignal.set(false);
     this.router.navigate(['/login']);

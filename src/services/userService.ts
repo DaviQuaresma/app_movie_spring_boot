@@ -3,6 +3,8 @@ import { ApiService } from './api.service';
 
 interface LoginResponse {
   token: string;
+  refreshToken: string;
+  status: number;
   email: string;
   message?: string;
 }
@@ -26,6 +28,14 @@ export class UserService {
 
   Login(email: string, password: string) {
     return this.api.post<LoginResponse>('auth/login', { email, password });
+  }
+
+  Logout(refreshToken: string) {
+    return this.api.post<LoginResponse>('auth/logout', { refreshToken });
+  }
+
+  Refresh(refreshToken: string) {
+    return this.api.post<LoginResponse>('auth/refresh', { refreshToken });
   }
 
   Create(email: string, password: string, fullName: string) {

@@ -5,18 +5,13 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { AuthService } from '../../../services/auth.service';
+import { UserService } from '../../../services/userService';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [
-    CommonModule,
-    RouterModule,
-    MatIconModule,
-    MatButtonModule,
-    MatMenuModule
-  ],
-  templateUrl: './header-component.html'
+  imports: [CommonModule, RouterModule, MatIconModule, MatButtonModule, MatMenuModule],
+  templateUrl: './header-component.html',
 })
 export class HeaderComponent {
   isMenuOpen = signal<boolean>(false);
@@ -25,6 +20,7 @@ export class HeaderComponent {
   constructor(
     private router: Router,
     private authService: AuthService,
+    private userService: UserService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
     // Inicializar o email do localStorage apenas no browser
@@ -48,8 +44,26 @@ export class HeaderComponent {
   }
 
   logout(): void {
-    this.authService.logout();
-    this.closeMobileMenu();
+    cookieStore.get('refreshToken').then((oldToken) => {
+      if (oldToken) {
+        cookieStore.delete('refreshToken');
+      }
+
+      this.userService.Logout(oldToken?.value || '').subscribe({
+        next: (response) => {
+          if (response.status === 200) {
+            console.log('Logout bem-sucedido');
+            this.router.navigate(['/login']);
+          }
+        },
+        error: (error) => {
+          throw new Error('Erro ao fazer logout: ' + error);
+        },
+      });
+
+      this.authService.logout();
+      this.closeMobileMenu();
+    });
   }
 
   isActiveRoute(route: string): boolean {
@@ -61,7 +75,7 @@ export class HeaderComponent {
     return {
       name: email || 'Usuário',
       email: email || 'user@email.com',
-      avatar: ''
+      avatar: '',
     };
   }
 
@@ -70,10 +84,10 @@ export class HeaderComponent {
     if (!name || name === 'Usuário') {
       return 'US';
     }
-    
+
     return name
       .split(' ')
-      .map(n => n[0])
+      .map((n) => n[0])
       .join('')
       .toUpperCase()
       .substring(0, 2);
