@@ -41,32 +41,22 @@ export class LoginPage implements OnInit {
   }
 
   login() {
-    const oldToken = localStorage.getItem('token');
+    this.authService.logout();
 
-    cookieStore.get('refreshToken').then((oldRefreshToken) => {
-      if (oldToken || oldRefreshToken) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        cookieStore.delete('refreshToken');
-      }
-
-      this.userService.Login(this.email(), this.password()).subscribe({
-        next: (response) => {
-          if (response.token) {
-            this.authService.login(response.token);
-            localStorage.setItem('user', response.email);
-            cookieStore.set('refreshToken', response.refreshToken);
-            this.route.navigate(['/movies']);
-          } else {
-            alert('Erro: Token não recebido do servidor');
-          }
-        },
-        error: (error) => {
-          const errorMessage =
-            error.error?.message || error.message || 'Erro desconhecido no login';
-          alert('Erro no login: ' + errorMessage);
-        },
-      });
+    this.userService.Login(this.email(), this.password()).subscribe({
+      next: (response) => {
+        if (response.token && response.refreshToken) {
+          this.authService.login(response.token, response.refreshToken);
+          localStorage.setItem('user', response.email);
+          this.route.navigate(['/movies']);
+        } else {
+          alert('Erro: Tokens não recebidos do servidor');
+        }
+      },
+      error: (error) => {
+        const errorMessage = error.error?.message || error.message || 'Erro desconhecido no login';
+        alert('Erro no login: ' + errorMessage);
+      },
     });
   }
 

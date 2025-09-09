@@ -23,7 +23,6 @@ export class HeaderComponent {
     private userService: UserService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
-    // Inicializar o email do localStorage apenas no browser
     if (isPlatformBrowser(this.platformId)) {
       const userEmail = localStorage.getItem('user');
       this.emailStorage.set(userEmail || 'Usuário');
@@ -44,26 +43,25 @@ export class HeaderComponent {
   }
 
   logout(): void {
-    cookieStore.get('refreshToken').then((oldToken) => {
-      if (oldToken) {
-        cookieStore.delete('refreshToken');
-      }
+    const refreshToken = this.authService.getRefreshToken();
 
-      this.userService.Logout(oldToken?.value || '').subscribe({
+    if (refreshToken) {
+      this.userService.Logout(refreshToken).subscribe({
         next: (response) => {
-          if (response.status === 200) {
-            console.log('Logout bem-sucedido');
-            this.router.navigate(['/login']);
-          }
+          console.log('Logout no backend bem-sucedido');
         },
         error: (error) => {
-          throw new Error('Erro ao fazer logout: ' + error);
+          console.warn('Erro ao fazer logout no backend:', error);
+        },
+        complete: () => {
+          this.authService.logout();
+          this.closeMobileMenu();
         },
       });
-
+    } else {
       this.authService.logout();
       this.closeMobileMenu();
-    });
+    }
   }
 
   isActiveRoute(route: string): boolean {
