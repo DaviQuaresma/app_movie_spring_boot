@@ -9,6 +9,14 @@ interface LoginResponse {
   message?: string;
 }
 
+interface LogoutResponse {
+  message?: string;
+}
+
+interface RefreshResponse {
+  token: string;
+}
+
 interface CreateResponse {
   message: string;
   email?: string;
@@ -29,13 +37,13 @@ export class UserService {
   Login(email: string, password: string) {
     return this.api.post<LoginResponse>('auth/login', { email, password });
   }
-
+  
   Logout(refreshToken: string) {
-    return this.api.post<LoginResponse>('auth/logout', { refreshToken });
+    return this.api.post('auth/logout', { refreshToken });
   }
 
   Refresh(refreshToken: string) {
-    return this.api.post<LoginResponse>('auth/refresh', { refreshToken });
+    return this.api.post<RefreshResponse>('auth/refresh', { refreshToken });
   }
 
   Create(email: string, password: string, fullName: string) {

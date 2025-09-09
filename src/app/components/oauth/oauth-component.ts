@@ -44,7 +44,7 @@ export class OAuthCallbackComponent implements OnInit {
         const data = await response.json();
 
         if (data.token) {
-          this.authService.loginOAuth(data.token);
+          this.authService.login(data.token, data.refreshToken);
 
           if (data.email) {
             localStorage.setItem('user', data.email);

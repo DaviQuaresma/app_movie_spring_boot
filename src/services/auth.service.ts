@@ -30,12 +30,10 @@ export class AuthService {
           if (payload.exp && payload.exp > currentTime) {
             this.isAuthenticatedSignal.set(true);
           } else {
-            // NÃO faz logout aqui - apenas limpa token expirado
             localStorage.removeItem('token');
             this.isAuthenticatedSignal.set(false);
           }
         } catch (error) {
-          // NÃO faz logout aqui - apenas limpa token inválido
           localStorage.removeItem('token');
           this.isAuthenticatedSignal.set(false);
         }
@@ -47,9 +45,8 @@ export class AuthService {
 
   login(token: string, refreshToken: string): void {
     if (isPlatformBrowser(this.platformId)) {
-      localStorage.setItem('token', token);
-      this.setCookie('refreshToken', refreshToken, 7);
-      console.log('🍪 RefreshToken salvo nos cookies');
+      localStorage.setItem('token', refreshToken);
+      this.setCookie('refreshToken', refreshToken);
       this.isAuthenticatedSignal.set(true);
     }
   }
@@ -57,7 +54,6 @@ export class AuthService {
   getRefreshToken(): string | null {
     if (isPlatformBrowser(this.platformId)) {
       const token = this.getCookie('refreshToken');
-      console.log('🍪 RefreshToken recuperado dos cookies:', !!token);
       return token;
     }
     return null;
@@ -66,14 +62,6 @@ export class AuthService {
   updateToken(newToken: string): void {
     if (isPlatformBrowser(this.platformId)) {
       localStorage.setItem('token', newToken);
-      console.log('🔄 Token atualizado no localStorage');
-      this.isAuthenticatedSignal.set(true);
-    }
-  }
-
-  loginOAuth(token: string): void {
-    if (isPlatformBrowser(this.platformId)) {
-      localStorage.setItem('token', token);
       this.isAuthenticatedSignal.set(true);
     }
   }
@@ -86,7 +74,6 @@ export class AuthService {
     this.router.navigate(['/login']);
   }
 
-  // Método para limpar apenas localmente sem redirecionar
   clearTokensOnly(): void {
     if (isPlatformBrowser(this.platformId)) {
       this.clearTokens();
@@ -114,14 +101,13 @@ export class AuthService {
           if (payload.exp && payload.exp > currentTime) {
             return token;
           } else {
-            // Token expirado - retorna null mas NÃO limpa tudo
-            console.log('🔶 Token expirado, mas mantendo refreshToken para renovação');
             return null;
           }
         } catch (error) {
-          console.error('❌ Erro ao decodificar token:', error);
-          // Token inválido - limpa apenas o token, mantém refreshToken
-          localStorage.removeItem('token');
+          const refreshToken = this.getRefreshToken();
+          if (!refreshToken) {
+            localStorage.removeItem('token');
+          }
           return null;
         }
       }
@@ -129,10 +115,10 @@ export class AuthService {
     return null;
   }
 
-  private setCookie(name: string, value: string, days: number): void {
+  private setCookie(name: string, value: string): void {
     if (isPlatformBrowser(this.platformId)) {
       const expires = new Date();
-      expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
+      expires.setTime(expires.getTime() + 7 * 24 * 60 * 60 * 1000);
       document.cookie = `${name}=${value};expires=${expires.toUTCString()};path=/;secure;samesite=strict`;
     }
   }

@@ -9,35 +9,48 @@ import { map, catchError } from 'rxjs/operators';
 export class AuthGuard implements CanActivate {
   private userService = inject(UserService);
   private authService = inject(AuthService);
-  
+
   constructor(private router: Router) {}
 
   canActivate(): Observable<boolean> {
     const token = this.authService.getToken();
-    
-    if (!token) {
-      console.log('Nenhum token encontrado');
+    const refreshToken = this.authService.getRefreshToken();
+
+    if (!token && !refreshToken) {
       this.router.navigate(['/login']);
       return of(false);
     }
 
-    return this.userService.Me().pipe(
-      map(() => {
-        return true;
-      }),
-      catchError((error) => {
-        console.error('Erro na validação do token:', error);
-        
-        if (error.message?.includes('Token expirado') || 
-            error.message?.includes('JWT expired') ||
-            error.message?.includes('403')) {
-          console.log('Token expirado ou inválido, redirecionando para login');
-          this.authService.logout(); 
-        }
-        
-        this.router.navigate(['/login']);
-        return of(false);
-      })
-    );
+    if (!token && refreshToken) {
+      return this.userService.Me().pipe(
+        map(() => {
+          return true;
+        }),
+        catchError((error) => {
+          this.router.navigate(['/login']);
+          return of(false);
+        })
+      );
+    }
+
+    if (token) {
+      return this.userService.Me().pipe(
+        map(() => {
+          return true;
+        }),
+        catchError((error) => {
+
+          if (refreshToken) {
+            return of(false); 
+          } else {
+            this.router.navigate(['/login']);
+            return of(false);
+          }
+        })
+      );
+    }
+
+    this.router.navigate(['/login']);
+    return of(false);
   }
 }

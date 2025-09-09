@@ -6,6 +6,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { AuthService } from '../../../services/auth.service';
 import { UserService } from '../../../services/userService';
+import { HttpClient } from '@angular/common/http';
 
 @Component({
   selector: 'app-header',
@@ -21,6 +22,7 @@ export class HeaderComponent {
     private router: Router,
     private authService: AuthService,
     private userService: UserService,
+    private http: HttpClient,
     @Inject(PLATFORM_ID) private platformId: Object
   ) {
     if (isPlatformBrowser(this.platformId)) {
@@ -46,18 +48,29 @@ export class HeaderComponent {
     const refreshToken = this.authService.getRefreshToken();
 
     if (refreshToken) {
-      this.userService.Logout(refreshToken).subscribe({
-        next: (response) => {
-          console.log('Logout no backend bem-sucedido');
-        },
-        error: (error) => {
-          console.warn('Erro ao fazer logout no backend:', error);
-        },
-        complete: () => {
-          this.authService.logout();
-          this.closeMobileMenu();
-        },
-      });
+      this.http
+        .post(
+          'http://localhost:8005/auth/logout',
+          { refreshToken },
+          {
+            responseType: 'text',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        )
+        .subscribe({
+          next: (response) => {
+            console.log(response);
+          },
+          error: (error) => {
+              console.warn('Erro ao fazer logout no backend:', error);
+          },
+          complete: () => {
+            this.authService.logout();
+            this.closeMobileMenu();
+          },
+        });
     } else {
       this.authService.logout();
       this.closeMobileMenu();
